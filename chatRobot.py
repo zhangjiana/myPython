@@ -54,15 +54,21 @@ def xiao_ai(say, user_id):
     # print text
     return text
 
-@itchat.msg_register(itchat.content.TEXT)
+@itchat.msg_register(itchat.content.TEXT, isFriendChat=True, isGroupChat=True)
 def recv_content(msg):
     say = msg['Text']
     user_id = msg.get('FromUserName', '@0') # 获取用户ID
+
+    if (msg.isAt):
+        result = xiao_ai(say, user_id);
+        itchat.send(u'@%s\u2005: %s' % (msg['ActualNickName'], result), msg['FromUserName'])
+
+        print result
+        # return result
+        # itchat.send(result)  # call xiaoai
     print say, user_id;
-    result = xiao_ai(say, user_id);
-    print result
-    return result
-    itchat.send(result) # call xiaoai
+
+
 
 if __name__ == '__main__':
     # itchat.auto_login(enableCmdQR=2) # hotReload=True
