@@ -20,21 +20,37 @@
 
 import itchat
 import requests
+import random
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 applyMsg = {
-    'eat': 'an apple',
+    'doutu': 'pictures\{}.jpg'.format(random.randint(0, 50)),
     'sleep': 'hoo,hoo'
 }
+
+
+def next_topic():
+    """
+        聊天机器人无法获取回复时的备用回复
+        """
+
+    return random.choice((
+        '换个话题吧',
+        '聊点别的吧',
+        '下一个话题吧',
+        '无言以对呢',
+        '这话我接不了呢'
+    ))
+
+
 def xiao_ai(say, user_id):
     '''调用聚合机器人接口实现自动回复，逻辑层次可以在这里面加'''
     if applyMsg.get(say, None):
         return applyMsg[say]
     url = 'http://www.tuling123.com/openapi/api'
-    params = {
-        'info' : say,
-        'userid' : user_id,
-        'key' : '978f281744b2cda30642dbbaf3eb8349'
-    }
     config = {
         'key': '621547baa4ea4080bfd4e0ce655ea62f',
         'info': say,
@@ -42,32 +58,62 @@ def xiao_ai(say, user_id):
     }
     r = requests.post(url, data=config)
     data = r.json()
-    # print data
-    if data['code'] != 100000:
-        return 'xiaoai病了，过会再问吧'
+    ret = str()
+    print data
+    # """ 文本类 """
+    if data.get('code') >= 100000:
+        text = data.get('text')
+        if not text or (text == say and len(text) > 3):
+            text = next_topic()
+        url = data.get('url')
+        items = data.get('list', list())
 
-    # result = data['result']
-    text = data['text']
-    # url = result.get('url', '')
+        ret += str(text)
+        if url:
+            ret += '\n{}'.format(url)
+        for item in items:
+            ret += '\n\n{}\n{}'.format(
+                item.get('article') or item.get('name'),
+                item.get('detailurl')
+            )
+    else:
+        ret += next_topic()
+    print ret
+    # text = data['text']
+    return ret
 
-    # recv = text + url
-    # print text
-    return text
 
-@itchat.msg_register(itchat.content.TEXT, isFriendChat=True, isGroupChat=True)
+@itchat.msg_register(itchat.content.TEXT, isGroupChat=True)
 def recv_content(msg):
-    say = msg['Text']
-    user_id = msg.get('FromUserName', '@0') # 获取用户ID
-
+    say = msg['Content']
+    user_id = msg.get('FromUserName', '@0')  # 获取用户ID
+    print msg
     if (msg.isAt):
         result = xiao_ai(say, user_id);
         itchat.send(u'@%s\u2005: %s' % (msg['ActualNickName'], result), msg['FromUserName'])
-
+        user = itchat.search_chatrooms(userName=user_id)
+        print user
         print result
-        # return result
-        # itchat.send(result)  # call xiaoai
-    print say, user_id;
 
+
+@itchat.msg_register(itchat.content.TEXT, isFriendChat=True)
+def friend_content(msg):
+    say = msg['Content']
+    user_id = msg.get('FromUserName', '@0')
+    print say, user_id
+    result = xiao_ai(say, user_id)
+    if msg.get('MsgType') == 3:
+        print msg.get('MsgId')
+        itchat.send_image('pictures\{}.jpg'.format(random.randint(0, 30)), msg['FromUserName'])
+    itchat.send(result, msg['FromUserName'])
+
+
+@itchat.msg_register(itchat.content.PICTURE, isFriendChat=True, isGroupChat=True)
+def friend_content(msg):
+    print msg
+    print msg.get('MsgId')
+    img = 'pictures{}.jpg'.format(random.randint(0, 30))
+    itchat.send_image(img, msg['FromUserName'])
 
 
 if __name__ == '__main__':
