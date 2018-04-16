@@ -6,7 +6,7 @@ import requests
 
 
 def download_img():
-    url = 'https://image.baidu.com/search/index?tn=baiduimage&ipn=r&ct=201326592&cl=2&lm=-1&st=-1&fm=result&fr=&sf=1&fmq=1522837600822_R&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&ie=utf-8&word=%E8%A1%A8%E6%83%85%E5%8C%85'
+    url = 'https://image.baidu.com/search/index?ct=201326592&cl=2&st=-1&lm=-1&nc=1&ie=utf-8&tn=baiduimage&ipn=r&rps=1&pv=&fm=rs14&word=%E5%BE%AE%E4%BF%A1%E6%96%97%E5%9B%BE%E8%A1%A8%E6%83%85%E5%8C%85&oriquery=%E8%A1%A8%E6%83%85%E5%8C%85&ofr=%E8%A1%A8%E6%83%85%E5%8C%85&sensitive=0'
     html = requests.get(url).text
     pic_url = re.findall('"objURL":"(.*?)",', html, re.S)
     i = 0
