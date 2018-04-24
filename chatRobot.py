@@ -82,7 +82,7 @@ def xiao_ai(say, user_id):
     # text = data['text']
     return ret
 
-
+# 群聊@后，回应
 @itchat.msg_register(itchat.content.TEXT, isGroupChat=True)
 def recv_content(msg):
     say = msg['Content']
@@ -95,7 +95,7 @@ def recv_content(msg):
         print user
         print result
 
-
+# 好友回应
 @itchat.msg_register(itchat.content.TEXT, isFriendChat=True)
 def friend_content(msg):
     say = msg['Content']
@@ -107,7 +107,7 @@ def friend_content(msg):
         itchat.send_image('pictures\{}.jpg'.format(random.randint(0, 30)), msg['FromUserName'])
     itchat.send(result, msg['FromUserName'])
 
-
+#日常斗图，群聊和好友
 @itchat.msg_register(itchat.content.PICTURE, isFriendChat=True, isGroupChat=True)
 def friend_content(msg):
     print msg
