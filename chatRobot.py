@@ -117,6 +117,5 @@ def friend_content(msg):
 
 
 if __name__ == '__main__':
-    # itchat.auto_login(enableCmdQR=2) # hotReload=True
-    itchat.auto_login(hotReload=True)
+    itchat.auto_login(enableCmdQR=2,hotReload=True) # hotReload=True
     itchat.run()
